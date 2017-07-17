@@ -39,7 +39,7 @@ def website():
     if request.method == 'GET':
         return render_template('index.html')
     else:
-        word = request.form['word']
+        word = request.form['word'].lower()
         if not word.isalpha() or word not in dictionary:
             return render_template('solution.html')
         else:
