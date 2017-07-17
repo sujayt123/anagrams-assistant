@@ -2,7 +2,13 @@ from flask import Flask, request, render_template
 from itertools import combinations
 from collections import defaultdict
 
+app = Flask(__name__)
+
+@app.before_first_request
 def setup():
+    global dictionary
+    global anagrams
+    global nearest_steals
     dictionary = set() # set of all valid scrabble words {a, aa, ab, ad, ...}
     anagrams = defaultdict(set) # anagrams: sorted(word) --> {words}
     with open('dictionary.txt') as file:
@@ -25,10 +31,8 @@ def setup():
                         nearest_steals[subword][1].clear()
                     if len(word) == nearest_steals[subword][0]:
                         nearest_steals[subword][1].add(sorted_word)
-    return dictionary, anagrams, nearest_steals
+    # return dictionary, anagrams, nearest_steals
 
-app = Flask(__name__)
-dictionary, anagrams, nearest_steals = setup()
 
 @app.route('/', methods=['GET', 'POST'])
 def website():
@@ -44,4 +48,4 @@ def website():
             return render_template('solution.html', valid_word=True, anagrams=anagrams[sorted_word], steal_words=potential_steals)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, use_reloader=True)
