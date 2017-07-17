@@ -1,1 +1,1 @@
-web: gunicorn app:nearest_anagram --log-file=-
+web: gunicorn app:app --log-file=-
