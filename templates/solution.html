@@ -1,0 +1,22 @@
+{% extends "index.html" %}
+{% block solution %}
+{% if valid_word %}
+    All anagrams of {{ word }} include:
+    <ul>
+        {% for anagram in anagrams %}
+        <li>{{ anagram }}</a></li>
+        {% endfor %}
+    </ul>
+    Closest steal-words include
+    <ul>
+        {% for base in steal_words %}
+            {% for anagram in base %}
+
+            <li>{{ anagram }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% else %}
+    Your input was not valid in the Scrabble Dictionary!
+{% endif %}
+{% endblock %}

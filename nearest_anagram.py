@@ -1,3 +1,4 @@
+from flask import Flask, request, render_template
 from itertools import combinations
 from collections import defaultdict
 
@@ -26,28 +27,21 @@ def setup():
                         nearest_steals[subword][1].add(sorted_word)
     return dictionary, anagrams, nearest_steals
 
-def main():
-    dictionary, anagrams, nearest_steals = setup()
-    print "Welcome to the Anagrams helper! You may enter a word to find its intrinsic anagrams",
-    print "and all its nearest possible 'steal-words', using the scrabble dictionary as its base."
-    while(1):
-        word = raw_input("Enter a word --> ").lower()
-        if not word.isalpha():
-            print "Your input was not a valid string!"
-        elif word not in dictionary:
-            print "Your input was not valid in the Scrabble Dictionary!"
+app = Flask(__name__)
+dictionary, anagrams, nearest_steals = setup()
+
+@app.route('/', methods=['GET', 'POST'])
+def website():
+    if request.method == 'GET':
+        return render_template('index.html')
+    else:
+        word = request.form['word']
+        if not word.isalpha() or word not in dictionary:
+            return render_template('solution.html')
         else:
             sorted_word = ''.join(sorted(word))
-            print "All anagrams of '" + word + "': "
-            for anagram in anagrams[sorted_word]:
-                print anagram
-            print ""
-            print ""
-            print "All nearest steals of '" + word + "', involving " + str(nearest_steals[sorted_word][0] - len(sorted_word)) + " more letters: "
-            for elem in nearest_steals[sorted_word][1]:
-                print anagrams[elem]
-        print ""
-
+            potential_steals = [anagrams[base] for base in nearest_steals[sorted_word][1]]
+            return render_template('solution.html', valid_word=True, anagrams=anagrams[sorted_word], steal_words=potential_steals)
 
 if __name__ == "__main__":
-    main()
+    app.run()
