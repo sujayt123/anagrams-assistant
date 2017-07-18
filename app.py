@@ -27,10 +27,12 @@ def website():
         else:
             sorted_word = ''.join(sorted(word))
             anagrams = db.anagrams.find_one({"sorted": sorted_word})['anagrams']
-            potential_steals = \
-                [db.anagrams.find_one({"sorted": base})['anagrams']
-                 for base in
-                 db.nearest_steals.find_one({"sorted": sorted_word})['steals'][1]]
+            steal_list = db.nearest_steals.find_one({"sorted": sorted_word})
+            potential_steals = [] if steal_list is None else [
+                db.anagrams.find_one({"sorted": base})['anagrams']
+                for base in
+                steal_list['steals'][1]
+                ]
             return render_template('solution.html', valid_word=True, anagrams=anagrams, steal_words=potential_steals)
 
 if __name__ == "__main__":
